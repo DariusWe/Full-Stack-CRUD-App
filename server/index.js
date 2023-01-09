@@ -31,6 +31,10 @@ const db = mysql.createPool({
   database: "railway",
 });
 
+app.get("/", (req, res) => {
+  res.send("API Endpoint for getting database entries: .../api/get");
+});
+
 app.get("/api/get", (req, res) => {
   const sqlSelect = "SELECT * FROM tweets";
   console.log("Selecting * from tweets");
