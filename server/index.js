@@ -16,11 +16,18 @@ https://medium.com/zero-equals-false/using-cors-in-express-cac7e29b005b
 app.use(express.json());
 // express.json() is a inbuilt middleware to parse incoming requests with JSON data. No need when only using GET requests.
 
+// const db = mysql.createPool({
+//   host: "localhost",
+//   user: "root",
+//   password: "password",
+//   database: "full_stack_app_db",
+// });
+
 const db = mysql.createPool({
-  host: "localhost",
+  host: "containers-us-west-69.railway.app",
   user: "root",
-  password: "password",
-  database: "full_stack_app_db",
+  password: "FEjnLVGykwNHikUE5rWL",
+  database: "railway",
 });
 
 app.get("/api/get", (req, res) => {
