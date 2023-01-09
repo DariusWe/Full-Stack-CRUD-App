@@ -1,0 +1,45 @@
+.tweet {
+  max-width: 600px;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 6px 10px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  transition: all 0.15s;
+  transition-timing-function: ease;
+  animation-name: FadeIn;
+  animation-duration: 0.3s;
+  animation-timing-function: ease;
+  opacity: 1;
+
+  @keyframes FadeIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-25px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  &.pop {
+    transform: translateY(-8px);
+  }
+
+  i {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #cfcfcf;
+    margin-right: 20px;
+    cursor: pointer;
+    &:first-child {
+      margin-left: 2px;
+    }
+    &:hover {
+      color: #222;
+    }
+    &.fa-pen-to-square {
+      font-size: 15px;
+    }
+  }
+}

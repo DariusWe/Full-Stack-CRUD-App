@@ -1,0 +1,25 @@
+.fa-caret-down {
+  position: absolute;
+  font-size: 36px;
+  color: #cfcfcf;
+  bottom: 6vh;
+  left: 50%;
+  animation-duration: 600ms;
+  // animation-name: Pop;
+  animation-timing-function: ease-out;
+
+  @keyframes Pop {
+    0% {
+      transform: scale(1);
+      color: #dfdfdf;
+    }
+    50% {
+      transform: scale(1.8);
+      color: #888;
+    }
+    100% {
+      transform: scale(1);
+      color: #dfdfdf;
+    }
+  }
+}

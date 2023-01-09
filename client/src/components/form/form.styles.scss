@@ -1,0 +1,59 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  margin: 40px 0;
+  input {
+    font-family: inherit;
+    font-size: 15px;
+    height: 36px;
+    padding: 6px;
+    margin: 6px 0 18px 0;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    background-color: transparent;
+    &:focus {
+      outline: none;
+      border: 1px solid var(--accent-1);
+    }
+  }
+  textarea {
+    font-family: inherit;
+    font-size: 15px;
+    height: 120px;
+    padding: 6px;
+    margin-top: 6px;
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    &:focus {
+      outline: none;
+      border: 1px solid var(--accent-1);
+    }
+  }
+  .form-buttons {
+    button {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      margin-top: 30px;
+      color: rgba(255, 255, 255, 0.92);
+      border: none;
+      border-radius: 8px;
+      background-color: var(--accent-1);
+      transition: all 50ms;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.8;
+      }
+      &:active {
+        transform: scale(0.95);
+      }
+      &:nth-child(2) {
+        margin-left: 12px;
+      }
+      &.is-loading {
+        opacity: 0.8;
+      }
+    }
+  }
+}
