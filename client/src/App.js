@@ -14,7 +14,11 @@ function App() {
   const [currentlyEditedID, setCurrentlyEditedID] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [popEffectForID, setPopEffectForID] = useState(null);
-  const [userScrolledToBottom ,setUserScrolledToBottom] = useState(false);
+  const [userScrolledToBottom, setUserScrolledToBottom] = useState(false);
+  const baseUrl =
+    process.env.REACT_APP_ENVIRONMENT === "local"
+      ? "http://localhost:3001"
+      : "https://full-stack-crud-app-production.up.railway.app";
   const elementRef = useRef();
 
   const resetInputFields = () => {
@@ -23,7 +27,7 @@ function App() {
   };
 
   const fetchTweets = async () => {
-    const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/get");
+    const response = await fetch(`${baseUrl}/api/get`);
     const data = await response.json();
     setTweets(data);
   };
@@ -31,7 +35,7 @@ function App() {
   const postTweet = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/insert", {
+      const response = await fetch(`${baseUrl}/api/insert`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +57,7 @@ function App() {
 
   const updateTweet = async () => {
     setIsLoading(true);
-    const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/update/", {
+    const response = await fetch(`${baseUrl}/api/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -77,7 +81,7 @@ function App() {
   };
 
   const deleteTweet = async (id) => {
-    const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/delete/" + id, {
+    const response = await fetch(`${baseUrl}/api/delete/${id}`, {
       method: "DELETE",
     });
     const data = await response.json();
@@ -93,10 +97,10 @@ function App() {
 
   useEffect(() => {
     const resetDB = async () => {
-      await fetch("https://full-stack-crud-app-production.up.railway.app/api/delete/all", {
+      await fetch(`${baseUrl}/api/delete/all`, {
         method: "DELETE",
       });
-      await fetch("https://full-stack-crud-app-production.up.railway.app/api/insert-batch", {
+      await fetch(`${baseUrl}/api/insert-batch`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,6 +110,8 @@ function App() {
       fetchTweets();
     };
     resetDB();
+    // make fetchTweets and baseUrl useRef or useCallback and include them here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkUserPosition = (e) => {
@@ -115,7 +121,7 @@ function App() {
     } else {
       setUserScrolledToBottom(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (!elementRef.current) return;
