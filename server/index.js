@@ -1,7 +1,7 @@
 const mysql = require("mysql2");
 const express = require("express");
 const cors = require("cors");
-const port = process.env.PORT || 3001;
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
@@ -16,22 +16,16 @@ https://medium.com/zero-equals-false/using-cors-in-express-cac7e29b005b
 app.use(express.json());
 // express.json() is a inbuilt middleware to parse incoming requests with JSON data. No need when only using GET requests.
 
-// const db = mysql.createPool({
-//   host: "localhost",
-//   user: "root",
-//   password: "password",
-//   database: "full_stack_app_db",
-// });
-
 const db = mysql.createPool({
-  host: "containers-us-west-69.railway.app",
-  port: 6088,
-  user: "root",
-  password: "FEjnLVGykwNHikUE5rWL",
-  database: "railway",
+  host: process.env.MYSQLHOST,
+  port: process.env.MYSQLPORT,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
 });
 
 app.get("/", (req, res) => {
+  console.log(process.env);
   res.send("API Endpoint for getting database entries: .../api/get");
 });
 
@@ -89,6 +83,6 @@ app.delete("/api/delete/:id", (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log("Running on port", port);
+app.listen(process.env.PORT, () => {
+  console.log("Running on port", process.env.PORT);
 });
