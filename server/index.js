@@ -32,6 +32,7 @@ const db = mysql.createPool({
 });
 
 app.get("/", (req, res) => {
+  console.log("hello");
   res.send("API Endpoint for getting database entries: .../api/get");
 });
 
