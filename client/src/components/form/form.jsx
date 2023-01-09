@@ -13,14 +13,23 @@ const Form = ({
   isLoading,
 }) => {
   return (
-    <div className="form">
+    <form className="form">
       <label>Title:</label>
-      <input type="text" name="title" onChange={(e) => setTitle(e.target.value)} value={title}></input>
+      <input type="text" name="title" onChange={(e) => setTitle(e.target.value)} value={title} required />
       <label>Paragraph:</label>
-      <textarea name="paragraph" onChange={(e) => setParagraph(e.target.value)} value={paragraph}></textarea>
+      <textarea name="paragraph" onChange={(e) => setParagraph(e.target.value)} value={paragraph} required />
       <div className="form-buttons">
         {currentlyEditedID === null ? (
-          <button onClick={postTweet} className={isLoading ? "is-loading" : ""}>
+          <button
+            type="submit"
+            onClick={(e) => {
+              if (title.length > 0 && paragraph.length > 0) {
+                e.preventDefault();
+                postTweet();
+              }
+            }}
+            className={isLoading ? "is-loading" : ""}
+          >
             Submit
           </button>
         ) : (
@@ -39,7 +48,7 @@ const Form = ({
           </>
         )}
       </div>
-    </div>
+    </form>
   );
 };
 
