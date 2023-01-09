@@ -1,4 +1,8 @@
-const mysql = require("mysql2");
+const mysql = require("mysql2"); 
+/* 
+MySQL2 supports more modern auth protocols, which are required by some servers (e.g. railway).
+Leveraging MySQL leads to an database authentification error in railway
+*/
 const express = require("express");
 const cors = require("cors");
 require('dotenv').config();
@@ -23,9 +27,11 @@ const db = mysql.createPool({
   password: process.env.MYSQLPASSWORD,
   database: process.env.MYSQLDATABASE,
 });
-
+/*
+Fetching database connection variables from environment, as they are different on railway then on localhost.
+Railway will automatically inject these variables.
+*/
 app.get("/", (req, res) => {
-  console.log(process.env);
   res.send("API Endpoint for getting database entries: .../api/get");
 });
 
