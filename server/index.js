@@ -1,4 +1,4 @@
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const express = require("express");
 const cors = require("cors");
 const port = process.env.PORT || 3001;
@@ -32,13 +32,11 @@ const db = mysql.createPool({
 });
 
 app.get("/", (req, res) => {
-  console.log("hello");
   res.send("API Endpoint for getting database entries: .../api/get");
 });
 
 app.get("/api/get", (req, res) => {
   const sqlSelect = "SELECT * FROM tweets";
-  console.log("Selecting * from tweets");
   db.query(sqlSelect, (err, result) => {
     err && console.log(err);
     res.json(result);
