@@ -25,6 +25,7 @@ app.use(express.json());
 
 const db = mysql.createPool({
   host: "containers-us-west-69.railway.app",
+  port: 6088,
   user: "root",
   password: "FEjnLVGykwNHikUE5rWL",
   database: "railway",
@@ -32,6 +33,7 @@ const db = mysql.createPool({
 
 app.get("/api/get", (req, res) => {
   const sqlSelect = "SELECT * FROM tweets";
+  console.log("Selecting * from tweets");
   db.query(sqlSelect, (err, result) => {
     err && console.log(err);
     res.json(result);
