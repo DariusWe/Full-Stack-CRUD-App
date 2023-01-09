@@ -23,7 +23,7 @@ function App() {
   };
 
   const fetchTweets = async () => {
-    const response = await fetch("http://localhost:3001/api/get");
+    const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/get");
     const data = await response.json();
     setTweets(data);
   };
@@ -31,7 +31,7 @@ function App() {
   const postTweet = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/insert", {
+      const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/insert", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +53,7 @@ function App() {
 
   const updateTweet = async () => {
     setIsLoading(true);
-    const response = await fetch("http://localhost:3001/api/update/", {
+    const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/update/", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -77,7 +77,7 @@ function App() {
   };
 
   const deleteTweet = async (id) => {
-    const response = await fetch("http://localhost:3001/api/delete/" + id, {
+    const response = await fetch("https://full-stack-crud-app-production.up.railway.app/api/delete/" + id, {
       method: "DELETE",
     });
     const data = await response.json();
@@ -93,10 +93,10 @@ function App() {
 
   useEffect(() => {
     const resetDB = async () => {
-      await fetch("http://localhost:3001/api/delete/all", {
+      await fetch("https://full-stack-crud-app-production.up.railway.app/api/delete/all", {
         method: "DELETE",
       });
-      await fetch("http://localhost:3001/api/insert-batch", {
+      await fetch("https://full-stack-crud-app-production.up.railway.app/api/insert-batch", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
