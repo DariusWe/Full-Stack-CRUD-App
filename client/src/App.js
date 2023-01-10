@@ -13,6 +13,7 @@ function App() {
   const [tweetsOverflowing, setTweetsOverflowing] = useState(false);
   const [currentlyEditedID, setCurrentlyEditedID] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingInitially, setIsLoadingInitially] = useState(false);
   const [popEffectForID, setPopEffectForID] = useState(null);
   const [userScrolledToBottom, setUserScrolledToBottom] = useState(false);
   const baseUrl =
@@ -96,6 +97,7 @@ function App() {
   };
 
   useEffect(() => {
+    setIsLoadingInitially(true);
     const resetDB = async () => {
       await fetch(`${baseUrl}/api/delete/all`, {
         method: "DELETE",
@@ -108,6 +110,7 @@ function App() {
         body: JSON.stringify(INITIAL_TWEETS),
       });
       fetchTweets();
+      setIsLoadingInitially(false);
     };
     resetDB();
     // make fetchTweets and baseUrl useRef or useCallback and include them here
@@ -153,6 +156,15 @@ function App() {
       </div>
       <div className="right-section">
         <div className="tweets" ref={elementRef} onScroll={checkUserPosition}>
+          {isLoadingInitially && (
+            <div className="loading-spinner-container">
+              <div className="lds-facebook">
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          )}
           {tweets
             .sort((a, b) => {
               return b.id - a.id;
