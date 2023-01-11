@@ -54,7 +54,17 @@ const Form = ({
               }}
               className={isLoading ? "is-loading" : ""}
             >
-              Save
+              {isLoading ? (
+              <div className="loading-spinner-button">
+                <div className="lds-facebook">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </div>
+            ) : (
+              "Save"
+            )}
             </button>
             <button
               onClick={() => {
