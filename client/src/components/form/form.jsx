@@ -30,11 +30,30 @@ const Form = ({
             }}
             className={isLoading ? "is-loading" : ""}
           >
-            Submit
+            {isLoading ? (
+              <div className="loading-spinner-button">
+                <div className="lds-facebook">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </div>
+            ) : (
+              "Submit"
+            )}
           </button>
         ) : (
           <>
-            <button onClick={updateTweet} className={isLoading ? "is-loading" : ""}>
+            <button
+              type="submit"
+              onClick={(e) => {
+                if (title.length > 0 && paragraph.length > 0) {
+                  e.preventDefault();
+                  updateTweet();
+                }
+              }}
+              className={isLoading ? "is-loading" : ""}
+            >
               Save
             </button>
             <button

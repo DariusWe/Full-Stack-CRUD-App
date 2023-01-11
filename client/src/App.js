@@ -5,6 +5,7 @@ import ArrowDown from "./components/arrow-down/arrow-down";
 import INITIAL_TWEETS from "./constants/INITIAL_TWEETS";
 import AppDescription from "./components/app-description/app-description";
 import Form from "./components/form/form";
+import LoadingSpinner from "./components/loading-spinner/loading-spinner";
 
 function App() {
   const [title, setTitle] = useState("");
@@ -156,15 +157,7 @@ function App() {
       </div>
       <div className="right-section">
         <div className="tweets" ref={elementRef} onScroll={checkUserPosition}>
-          {isLoadingInitially && (
-            <div className="loading-spinner-container">
-              <div className="lds-facebook">
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-            </div>
-          )}
+          {isLoadingInitially && <LoadingSpinner />}
           {tweets
             .sort((a, b) => {
               return b.id - a.id;
