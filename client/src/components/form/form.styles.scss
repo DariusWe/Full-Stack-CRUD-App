@@ -31,10 +31,11 @@
     }
   }
   .form-buttons {
+    display: flex;
+    align-items: flex-end;
     button {
       font-size: 14px;
       font-weight: 600;
-      // padding: 10px 20px;
       display: inline-flex;
       justify-content: center;
       align-items: center;
@@ -51,13 +52,13 @@
         opacity: 0.7;
       }
       &:active {
-        transform: scale(0.95);
+        transform: scale(1);
       }
       &:nth-child(2) {
         margin-left: 12px;
       }
       &.is-loading {
-         transform: scale(0.95);
+         transform: scale(1);
          opacity: 0.7;
       }
     }
@@ -65,8 +66,6 @@
 }
 
 .loading-spinner-button {
-  // height: 100%;
-  // width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -75,7 +74,6 @@
     position: relative;
     width: 31px;
     height: 20px;
-    //background-color: red;
   }
   .lds-facebook div {
     display: inline-block;

@@ -52,6 +52,8 @@ function App() {
       await fetchTweets();
       resetInputFields();
       setIsLoading(false);
+      if (!elementRef.current) return;
+      elementRef.current.scrollTop = 0;
     } catch (err) {
       console.log(err.message);
     }
