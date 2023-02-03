@@ -22,7 +22,7 @@
     }
   }
 
-  &.pop {
+  &.animation-active {
     transform: translateY(-8px);
   }
 
@@ -40,6 +40,49 @@
     }
     &.fa-pen-to-square {
       font-size: 15px;
+    }
+  }
+
+  .loading-spinner-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    .lds-facebook {
+      display: inline-block;
+      position: relative;
+      width: 31px;
+      height: 15px;
+    }
+    .lds-facebook div {
+      display: inline-block;
+      position: absolute;
+      left: 0px;
+      width: 6px;
+      background: #ccc;
+      animation: lds-facebook-2 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    }
+    .lds-facebook div:nth-child(1) {
+      left: 0px;
+      animation-delay: -0.2s;
+    }
+    .lds-facebook div:nth-child(2) {
+      left: 10px;
+      animation-delay: -0.1s;
+    }
+    .lds-facebook div:nth-child(3) {
+      left: 20px;
+      animation-delay: 0;
+    }
+    @keyframes lds-facebook-2 {
+      0% {
+        top: 0px;
+        height: 20px;
+      }
+      50%,
+      100% {
+        top: 4px;
+        height: 12px;
+      }
     }
   }
 }

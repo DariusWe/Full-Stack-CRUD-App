@@ -1,111 +1,36 @@
 import "./App.styles.scss";
 import { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setTweets } from "./store/tweets.slice";
 import Tweet from "./components/tweet/tweet";
 import ArrowDown from "./components/arrow-down/arrow-down";
 import INITIAL_TWEETS from "./constants/INITIAL_TWEETS";
+import BASE_URL from "./constants/BASE_URL";
 import AppDescription from "./components/app-description/app-description";
 import Form from "./components/form/form";
 import LoadingSpinner from "./components/loading-spinner/loading-spinner";
 
 function App() {
-  const [title, setTitle] = useState("");
-  const [paragraph, setParagraph] = useState("");
-  const [tweets, setTweets] = useState([]);
-  const [tweetsOverflowing, setTweetsOverflowing] = useState(false);
-  const [currentlyEditedID, setCurrentlyEditedID] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingInitially, setIsLoadingInitially] = useState(false);
-  const [popEffectForID, setPopEffectForID] = useState(null);
+  const [tweetsOverflowing, setTweetsOverflowing] = useState(false);
   const [userScrolledToBottom, setUserScrolledToBottom] = useState(false);
-  const baseUrl =
-    process.env.REACT_APP_ENVIRONMENT === "local"
-      ? "http://localhost:3001"
-      : "https://full-stack-crud-app-production.up.railway.app";
+  const tweets = useSelector((state) => state.tweets.tweets);
+  const dispatch = useDispatch();
   const elementRef = useRef();
 
-  const resetInputFields = () => {
-    setTitle("");
-    setParagraph("");
-  };
-
   const fetchTweets = async () => {
-    const response = await fetch(`${baseUrl}/api/get`);
+    const response = await fetch(`${BASE_URL}/api/get`);
     const data = await response.json();
-    setTweets(data);
-  };
-
-  const postTweet = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${baseUrl}/api/insert`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title,
-          paragraph: paragraph,
-        }),
-      });
-      const data = await response.json();
-      console.log(data);
-      await fetchTweets();
-      resetInputFields();
-      setIsLoading(false);
-      if (!elementRef.current) return;
-      elementRef.current.scrollTop = 0;
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  const updateTweet = async () => {
-    setIsLoading(true);
-    const response = await fetch(`${baseUrl}/api/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: currentlyEditedID,
-        title: title,
-        paragraph: paragraph,
-      }),
-    });
-    const data = await response.json();
-    console.log(data);
-    await fetchTweets();
-    resetInputFields();
-    setPopEffectForID(currentlyEditedID);
-    setCurrentlyEditedID(null);
-    setTimeout(() => {
-      setPopEffectForID(null);
-    }, 200);
-    setIsLoading(false);
-  };
-
-  const deleteTweet = async (id) => {
-    const response = await fetch(`${baseUrl}/api/delete/${id}`, {
-      method: "DELETE",
-    });
-    const data = await response.json();
-    console.log(data);
-    fetchTweets();
-  };
-
-  const editItem = (id) => {
-    setCurrentlyEditedID(id);
-    setTitle(tweets.filter((tweet) => tweet.id === id)[0].title);
-    setParagraph(tweets.filter((tweet) => tweet.id === id)[0].paragraph);
+    dispatch(setTweets(data));
   };
 
   useEffect(() => {
-    setIsLoadingInitially(true);
+    setIsLoading(true);
     const resetDB = async () => {
-      await fetch(`${baseUrl}/api/delete/all`, {
+      await fetch(`${BASE_URL}/api/delete/all`, {
         method: "DELETE",
       });
-      await fetch(`${baseUrl}/api/insert-batch`, {
+      await fetch(`${BASE_URL}/api/insert-batch`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +38,7 @@ function App() {
         body: JSON.stringify(INITIAL_TWEETS),
       });
       fetchTweets();
-      setIsLoadingInitially(false);
+      setIsLoading(false);
     };
     resetDB();
     // make fetchTweets and baseUrl useRef or useCallback and include them here
@@ -131,6 +56,11 @@ function App() {
 
   useEffect(() => {
     if (!elementRef.current) return;
+    elementRef.current.scrollTop = 0;
+  }, [tweets.length]);
+
+  useEffect(() => {
+    if (!elementRef.current) return;
     if (elementRef.current.scrollHeight > elementRef.current.clientHeight + 100) {
       setTweetsOverflowing(true);
     } else {
@@ -143,35 +73,18 @@ function App() {
       <div className="left-section">
         <div className="left-section-content">
           <AppDescription />
-          <Form
-            title={title}
-            setTitle={setTitle}
-            paragraph={paragraph}
-            setParagraph={setParagraph}
-            resetInputFields={resetInputFields}
-            currentlyEditedID={currentlyEditedID}
-            setCurrentlyEditedID={setCurrentlyEditedID}
-            postTweet={postTweet}
-            updateTweet={updateTweet}
-            isLoading={isLoading}
-          />
+          <Form />
         </div>
       </div>
       <div className="right-section">
         <div className="tweets" ref={elementRef} onScroll={checkUserPosition}>
-          {isLoadingInitially && <LoadingSpinner />}
-          {tweets
+          {isLoading && <LoadingSpinner />}
+          {[...tweets]
             .sort((a, b) => {
               return b.id - a.id;
             })
             .map((item) => (
-              <Tweet
-                key={item.id}
-                item={item}
-                editItem={editItem}
-                deleteTweet={deleteTweet}
-                popEffectActive={popEffectForID === item.id}
-              />
+              <Tweet key={item.id} item={item} />
             ))}
         </div>
         {tweetsOverflowing && !userScrolledToBottom ? <ArrowDown /> : null}
