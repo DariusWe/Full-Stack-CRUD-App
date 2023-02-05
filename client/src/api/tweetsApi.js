@@ -43,7 +43,6 @@ export const updateTweet = async (tweet) => {
 };
 
 export const resetDB = async (INITIAL_TWEETS) => {
-  console.log("Resetting DB");
   await fetch(`${BASE_URL}/api/delete/all`, {
     method: "DELETE",
   });

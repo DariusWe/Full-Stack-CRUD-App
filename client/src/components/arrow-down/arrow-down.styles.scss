@@ -7,6 +7,11 @@
   animation-duration: 600ms;
   // animation-name: Pop;
   animation-timing-function: ease-out;
+  cursor: pointer;
+
+  &:hover {
+    color: #555;
+  }
 
   @keyframes Pop {
     0% {

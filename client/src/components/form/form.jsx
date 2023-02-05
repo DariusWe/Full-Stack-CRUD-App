@@ -55,6 +55,7 @@ const Form = () => {
       setTitle(tweets.filter((tweet) => tweet.id === currentlyEditedId)[0].title);
       setParagraph(tweets.filter((tweet) => tweet.id === currentlyEditedId)[0].paragraph);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentlyEditedId, tweets]);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ const Form = () => {
     }
     resetInputFields();
     loadingRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postTweetMutation.isLoading, updateTweetMutation.isLoading, currentlyEditedId]);
 
   return (

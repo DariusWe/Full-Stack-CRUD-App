@@ -28,6 +28,7 @@ function App() {
 
   useEffect(() => {
     resetDbMutation.mutate(INITIAL_TWEETS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const scrollToBottom = () => {
