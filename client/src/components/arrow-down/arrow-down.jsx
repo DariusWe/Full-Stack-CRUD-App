@@ -1,10 +1,6 @@
 import "./arrow-down.styles.scss";
 
-const ArrowDown = () => {
-   // When scrollheight > clientHeight and tweets quantity change, add active class and 400ms later remove it again.
-
-  return (
-    <i className="fa-solid fa-caret-down"></i>
-  )
+const ArrowDown = ({ scrollToBottom }) => {
+  return <i className="fa-solid fa-caret-down" onClick={scrollToBottom}></i>;
 };
 export default ArrowDown;

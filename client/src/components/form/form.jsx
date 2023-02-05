@@ -1,88 +1,73 @@
 import "./form.styles.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setTweets, setCurrentlyEditedId, setPopUpEffectForId } from "../../store/tweets.slice";
-import BASE_URL from "../../constants/BASE_URL";
+import { setCurrentlyEditedId, setPopUpEffectForId } from "../../store/tweets.slice";
+import { useMutation, useQueryClient } from "react-query";
+import { postTweet, updateTweet } from "../../api/tweetsApi";
+
+/* 
+Interesting: Order of useEffects matters! At least if one useEffect is dependent on a value that another useEffect is changing.
+In this component, one useEffect is dispatching "setCurrentlyEditedId(null)" while the other one is using "currentlyEditedId" to 
+conditionally do stuff. If the useEffect with the dispatch is running first, the second useEffect (running in the same render cycle) 
+will not have access to the updated value immediately, which will cause the problem of unwantedly refilling the input fields here.
+*/
+
+/*
+If you want a mutation to stay in loading state while related queries update, you have to return the result of invalidateQueries() 
+from the callback.
+*/
 
 const Form = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [paragraph, setParagraph] = useState("");
-  const tweets = useSelector((state) => state.tweets.tweets);
-  const currentlyEditedID = useSelector((state) => state.tweets.currentlyEditedId);
+  const currentlyEditedId = useSelector((state) => state.tweets.currentlyEditedId);
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const tweets = queryClient.getQueryData("tweets");
+  const loadingRef = useRef(false);
 
   const resetInputFields = () => {
     setTitle("");
     setParagraph("");
   };
 
-  const reFetchTweets = async () => {
-    const response = await fetch(`${BASE_URL}/api/get`);
-    const data = await response.json();
-    dispatch(setTweets(data));
-  };
+  const postTweetMutation = useMutation(postTweet, {
+    onSuccess: () => {
+      return queryClient.invalidateQueries("tweets");
+    },
+  });
+
+  const updateTweetMutation = useMutation(updateTweet, {
+    onSuccess: () => {
+      return queryClient.invalidateQueries("tweets");
+    },
+  });
 
   useEffect(() => {
-    if (currentlyEditedID === null) return;
-    if (!tweets.find((tweet) => (tweet.id === currentlyEditedID))) {
-      // Tweet got deleted while being edited
+    // If currentlyEditedId, fill in the corresponding tweet into form fields
+    if (currentlyEditedId) {
+      if (!tweets.find((tweet) => tweet.id === currentlyEditedId)) {
+        // Tweet got deleted while being edited
+        dispatch(setCurrentlyEditedId(null));
+        resetInputFields();
+        return;
+      }
+      setTitle(tweets.filter((tweet) => tweet.id === currentlyEditedId)[0].title);
+      setParagraph(tweets.filter((tweet) => tweet.id === currentlyEditedId)[0].paragraph);
+    }
+  }, [currentlyEditedId, tweets]);
+
+  useEffect(() => {
+    // If isLoading state of one mutation changes from true to false, reset state and input fields
+    // Right now assuming that no error occurs, in which case you would probably want to keep state and input fields
+    if (postTweetMutation.isLoading || updateTweetMutation.isLoading || loadingRef.current === false) return;
+    if (currentlyEditedId) {
+      dispatch(setPopUpEffectForId(currentlyEditedId));
       dispatch(setCurrentlyEditedId(null));
-      resetInputFields();
-      return;
     }
-    setTitle(tweets.filter((tweet) => tweet.id === currentlyEditedID)[0].title);
-    setParagraph(tweets.filter((tweet) => tweet.id === currentlyEditedID)[0].paragraph);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentlyEditedID, tweets]);
-
-  const postTweet = async () => {
-    setIsLoading(true);
-    try {
-      const postResponse = await fetch(`${BASE_URL}/api/insert`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title,
-          paragraph: paragraph,
-        }),
-      });
-      const postData = await postResponse.json();
-      console.log(postData);
-      await reFetchTweets();
-      resetInputFields();
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  const updateTweet = async () => {
-    setIsLoading(true);
-    const response = await fetch(`${BASE_URL}/api/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: currentlyEditedID,
-        title: title,
-        paragraph: paragraph,
-      }),
-    });
-    const data = await response.json();
-    console.log(data);
-    await reFetchTweets();
-    dispatch(setPopUpEffectForId(currentlyEditedID));
-    setTimeout(() => {
-      dispatch(setPopUpEffectForId(null));
-    }, 200);
     resetInputFields();
-    dispatch(setCurrentlyEditedId(null));
-    setIsLoading(false);
-  };
+    loadingRef.current = false;
+  }, [postTweetMutation.isLoading, updateTweetMutation.isLoading, currentlyEditedId]);
 
   return (
     <form className="form">
@@ -91,18 +76,22 @@ const Form = () => {
       <label>Paragraph:</label>
       <textarea name="paragraph" onChange={(e) => setParagraph(e.target.value)} value={paragraph} required />
       <div className="form-buttons">
-        {currentlyEditedID === null ? (
+        {currentlyEditedId === null ? (
           <button
             type="submit"
             onClick={(e) => {
               if (title.length > 0 && paragraph.length > 0) {
                 e.preventDefault();
-                postTweet();
+                loadingRef.current = true;
+                postTweetMutation.mutate({
+                  title: title,
+                  paragraph: paragraph,
+                });
               }
             }}
-            className={isLoading ? "is-loading" : ""}
+            className={postTweetMutation.isLoading ? "is-loading" : ""}
           >
-            {isLoading ? (
+            {postTweetMutation.isLoading ? (
               <div className="loading-spinner-button">
                 <div className="lds-facebook">
                   <div></div>
@@ -121,12 +110,17 @@ const Form = () => {
               onClick={(e) => {
                 if (title.length > 0 && paragraph.length > 0) {
                   e.preventDefault();
-                  updateTweet();
+                  loadingRef.current = true;
+                  updateTweetMutation.mutate({
+                    id: currentlyEditedId,
+                    title: title,
+                    paragraph: paragraph,
+                  });
                 }
               }}
-              className={isLoading ? "is-loading" : ""}
+              className={updateTweetMutation.isLoading ? "is-loading" : ""}
             >
-              {isLoading ? (
+              {updateTweetMutation.isLoading ? (
                 <div className="loading-spinner-button">
                   <div className="lds-facebook">
                     <div></div>
