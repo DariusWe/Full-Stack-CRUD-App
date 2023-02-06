@@ -20,6 +20,8 @@ function App() {
     enabled: !!databaseResetCompleted,
   });
 
+  const tweetsQuantity = tweets ? tweets.length : 0;
+
   const resetDbMutation = useMutation(resetDB, {
     onSuccess: () => {
       setDatabaseResetCompleted(true);
@@ -34,7 +36,7 @@ function App() {
   const scrollToBottom = () => {
     const maxScrollPosition = elementRef.current.scrollHeight - elementRef.current.clientHeight;
     elementRef.current.scrollTop = maxScrollPosition;
-  }
+  };
 
   const checkUserPosition = (e) => {
     const maxScrollPosition = e.target.scrollHeight - e.target.clientHeight;
@@ -47,13 +49,17 @@ function App() {
 
   useEffect(() => {
     if (!elementRef.current) return;
-    elementRef.current.scrollTop = 0;
     if (elementRef.current.scrollHeight > elementRef.current.clientHeight + 100) {
       setTweetsOverflowing(true);
     } else {
       setTweetsOverflowing(false);
     }
   }, [tweets]);
+
+  useEffect(() => {
+    if (!elementRef.current) return;
+    elementRef.current.scrollTop = 0;
+  }, [tweetsQuantity]);
 
   if (status === "idle" || status === "loading") {
     return (
